@@ -5,7 +5,7 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 
-# 创建扩展实例
+# 创建扩展实例,放在这里为了全局使用
 bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
