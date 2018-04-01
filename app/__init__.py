@@ -1,3 +1,6 @@
+# 工厂函数
+# 为了可以动态修改程序的配置
+# 延迟创建程序实例，把创建过程移到可显式调用的工厂函数中
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
