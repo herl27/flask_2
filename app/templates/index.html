@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %} flasky index {% endblock %}
+
+{% block page_content %}
+{{ super() }}
+<div class="page_header">
+    <h1>Hello,{% if name %}{{name}}{% else %}访客{% endif %}</h1>
+    {% if known %}
+    <p>欢迎再次光临</p>
+    {% else %}
+    <p>初次见面，请多指教</p>
+    {% endif %}
+    {{ wtf.quick_form(form) }}
+</div>
+<div class="page-header">
+    <h1>Hello world!!</h1>
+    <p>现在时间：{{moment(current_time).format('LLL')}}</p>
+    <p>距当前时间已经过去{{moment(current_time).fromNow(refresh=True)}}</p>
+</div>
+{% endblock %}
