@@ -22,5 +22,5 @@ def index():
         # urlfor()需要指定蓝本的名字，当前蓝本可简写
         return redirect(url_for('.index'))
     return render_template('index.html', 
-        name=session[name], known=session['known'],
+        name=session['name'], known=session['known'],
         current_time = datetime.utcnow())

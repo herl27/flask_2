@@ -14,7 +14,6 @@ class Config(object):
     FLASKY_MAIL_SENDER = 'Flasky管理员 <flasky@example.com>'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # 疑问：这个静态方法为什么会起作用？
     @staticmethod
     def init_app(app):
         pass
