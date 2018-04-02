@@ -30,16 +30,16 @@ class DevelopmentConfig(Config):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     # 数据库位置
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI') or \
-        'sqlite:///' + os.path.join(basedir, db, date-dev.db)
+        'sqlite:///' + os.path.join(basedir, 'db', 'data-dev.db')
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI') or \
-        'sqlite:///' + os.path.join(basedir, db, date-test.db)
+        'sqlite:///' + os.path.join(basedir, 'db', 'data-test.db')
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI') or \
-        'sqlite:///' + os.path.join(basedir, db, date.db)
+        'sqlite:///' + os.path.join(basedir, 'db', 'data.db')
 
 config = {
     'development': DevelopmentConfig,

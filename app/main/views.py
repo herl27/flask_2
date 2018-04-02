@@ -3,10 +3,10 @@ from datetime import datetime
 from flask import render_template, session, redirect, url_for
 
 from . import main
-from forms import NameForm
+from .forms import NameForm
 from ..models import User
-# rote注册在蓝本中
-@main.route('/', ['GET', 'POST')
+# route注册在蓝本中
+@main.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
     if form.validate_on_submit():
