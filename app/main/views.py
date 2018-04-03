@@ -4,6 +4,7 @@ from flask import render_template, session, redirect, url_for
 
 from . import main
 from .forms import NameForm
+from .. import db
 from ..models import User
 # route注册在蓝本中
 @main.route('/', methods=['GET', 'POST'])
@@ -21,6 +22,6 @@ def index():
             db.session.commit()         
         # urlfor()需要指定蓝本的名字，当前蓝本可简写
         return redirect(url_for('.index'))
-    return render_template('index.html', 
-        name=session['name'], known=session['known'],
+    return render_template('index.html', form=form,
+        name=session.get('name'), known=session.get('known'),
         current_time = datetime.utcnow())
