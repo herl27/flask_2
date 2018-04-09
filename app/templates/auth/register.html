@@ -1,0 +1,14 @@
+
+{% extends "base.html" %}
+
+{% block title %} 用户注册 {% endblock %}
+
+{% block page_content %}
+<div class="page_header">
+	<h1>新用户注册</h1>
+</div>
+<div class="col-md-4">
+	{{wtf.quick_form(form)}}
+</div>
+{% endblock %}
+
