@@ -1,13 +1,11 @@
-{% extends "base.html" %}
+{% extends "auth/form_base.html" %}
 
-{% block title %} 用户登陆 {% endblock %}
+{% block title %} 账号登录 {% endblock %}
 
-{% block page_content %}
-<div class="page_header">
-	<h1>登陆</h1>
-</div>
-<div class="col-md-4">
-	{{wtf.quick_form(form)}}
+{% block auth_name %} 登录 {% endblock %}
+
+{% block col %}
+	{{super()}}
 	<p>
 		新用户？
 		<a href="{{ url_for('auth.register') }}">

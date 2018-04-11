@@ -1,9 +1,11 @@
+import os
 from flask import render_template, redirect, request, url_for, flash
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 from . import auth
-from .forms import LoginForm, RegistrationFrom
+from .forms import LoginForm, RegistrationFrom, ModifyPasswordForm
 from ..models import User
 from .. import db
+from ..save import save_to_file
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -16,11 +18,6 @@ def login():
         flash('错误的用户名或密码')
     return render_template('auth/login.html',form=form)
 
-@auth.route('/secret')
-@login_required
-def secret():
-    return 'Only authenticated users are allowed!'
-
 @auth.route('/logout')
 @login_required
 def logout():
@@ -32,9 +29,69 @@ def logout():
 def register():
     form = RegistrationFrom()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, password=form.password.data)
+        user = User(username=form.username.data,
+                email=form.email.data,
+                password=form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('注册成功，您可以登陆了')
-        return redirect(url_for('auth.login'))
+        token = user.generate_confirmation_token()
+        save_to_file(os.getenv('CONFIRM_PATH'),
+                user.username, 'auth/email/confirm.html',
+                user=user, token=token)
+        flash('您需要确认后才能使用')
+        return redirect(url_for('main.index'))
     return render_template('auth/register.html', form = form)
+
+@auth.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+    if current_user.confirm(token):
+        flash('您的账号已经确认')
+    else:
+        flash('无效的确认链接')
+    return redirect(url_for('main.index'))
+
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint[:5] != 'auth.'\
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main.index'))
+    return render_template('auth/unconfirmed.html')
+
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    save_to_file(os.getenv('CONFIRM_PATH'),
+        current_user.username, 'auth/email/confirm.html',
+        user=current_user, token=token)
+    flash('新的确认邮件已经发送')
+    return redirect(url_for('main.index'))
+
+@auth.route('/profile')
+@login_required
+def profile():
+   return render_template('auth/profile.html')
+
+@auth.route('/profile/modify_password', methods=['GET', 'POST'])
+def modify_password():
+    if current_user.confirmed:
+        form = ModifyPasswordForm()
+        if form.validate_on_submit():
+            current_user.password = form.new_password.data
+            db.session.add(current_user)
+            db.session.commit()
+            flash('密码修改成功，请重新登陆')
+            logout_user()
+            return redirect(url_for('auth.profile'))
+        return render_template('auth/modify_password.html',form=form)
+    return redirect(url_for('auth.unconfirmed'))
