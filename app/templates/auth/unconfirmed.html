@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %} 请确认您的账户 {% endblock %}
+
+{% block page_content %}
+{{ super() }}
+<div class="page_header">
+	<h1>
+		Hello,{{ current_user.username }}
+	</h1>
+	<h2>
+		你的账号还未确认
+	</h2>
+	<p>
+		您需要将账号激活，请登陆邮箱，在收件箱中找到确认邮件，点击链接即可激活账号。
+	</p>
+	<p>
+		未收到账号确认邮件？
+		<a href="{{ url_for('auth.resend_confirmation') }}">
+			重新发送
+		</a>
+	</p>
+{% endblock %}

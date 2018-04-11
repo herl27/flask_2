@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{user.username}},您的账号需要确认</title>	
+	</head>
+	<body>
+		<h1>Dear {{user.username}}</h1>
+		<p>欢迎来到本站</p>
+		<p>您需要点击下面的链接账号才能激活</p>
+		<p><a href="{{url_for('auth.confirm', token=token, _external=True)}}">{{url_for('auth.confirm', token=token, _external=True)}}</a></p>
+	</body>
+</html>

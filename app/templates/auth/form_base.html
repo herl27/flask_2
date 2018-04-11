@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %} 帐户 {% endblock %}
+
+{% block page_content %}
+<div class="page_header">
+	<h1>
+		{% block auth_name %} {% endblock %}	
+	</h1>
+</div>
+<div class="col-md-4">
+	{% block col %} 
+		{{wtf.quick_form(form)}}
+	{%endblock%}
+</div>
+{% endblock %}
+
