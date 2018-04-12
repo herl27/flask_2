@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %} 修改电子邮箱 {% endblock %}
+
+{% block page_content %}
+{{ super() }}
+<div class="page_header">
+	<h1>
+		修改电子邮箱
+	</h1>
+	<h2>
+		一封确认邮件已发往{{current_user.email}}
+	</h2>
+	<p>
+		请登陆邮箱，在收件箱中找到该邮件，点击链接继续。
+	</p>
+	<p>
+		未收到邮件？
+		<a href="{{ url_for('auth.modify_email') }}">
+			重新发送
+		</a>
+	</p>
+{% endblock %}

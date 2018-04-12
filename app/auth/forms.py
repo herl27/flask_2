@@ -41,3 +41,7 @@ class ModifyPasswordForm(FlaskForm):
         if not current_user.verify_password(field.data):
             raise ValidationError('密码错误')
 
+class ModifyEmailForm(FlaskForm):
+    email = StringField('新电子邮箱', validators=[DataRequired(), Email('请输入有效的电子邮箱地址'), EqualTo('email2', message='两次输入不一致')])
+    email2 = StringField('确认电子邮箱', validators=[DataRequired(), Email('请输入有效的电子邮箱地址')])
+    submit = SubmitField('修改')

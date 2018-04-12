@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>{{user.username}},您申请修改电子邮箱</title>	
+	</head>
+	<body>
+		<h1>Dear {{user.username}}</h1>
+		<p>您申请修改电子邮箱</p>
+		<p>如果是您本人发出的申请，请点击链接继续，否则请删除本邮件</p>
+		<p><a href="{{url_for('auth.confirm_modify_email', token=token, _external=True)}}">{{url_for('auth.confirm_modify_email', token=token, _external=True)}}</a></p>
+	</body>
+</html>

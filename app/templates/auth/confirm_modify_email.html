@@ -1,0 +1,13 @@
+{% extends "auth/form_base.html" %}
+
+{% block title %}修改电子邮箱{% endblock %}
+
+{% block auth_name %}修改电子邮箱{% endblock %}
+
+{% block col %}
+	{% if confirmation %}
+		{{ super() }}
+	{% else %}
+		<p>无效的链接，请重新发送</p>
+	{% endif %}
+{% endblock %}

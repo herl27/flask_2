@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from . import auth
-from .forms import LoginForm, RegistrationFrom, ModifyPasswordForm
+from .forms import LoginForm, RegistrationFrom, ModifyPasswordForm, ModifyEmailForm
 from ..models import User
 from .. import db
 from ..save import save_to_file
@@ -83,6 +83,7 @@ def profile():
    return render_template('auth/profile.html')
 
 @auth.route('/profile/modify_password', methods=['GET', 'POST'])
+@login_required
 def modify_password():
     if current_user.confirmed:
         form = ModifyPasswordForm()
@@ -95,3 +96,25 @@ def modify_password():
             return redirect(url_for('auth.profile'))
         return render_template('auth/modify_password.html',form=form)
     return redirect(url_for('auth.unconfirmed'))
+
+@auth.route('/profile/modify_email')
+@login_required
+def modify_email():
+    token = current_user.generate_confirmation_token()
+    save_to_file(os.getenv('CONFIRM_PATH'),
+        current_user.email, 'auth/email/modify_email.html',
+        user=current_user, token=token)
+    return render_template('auth/modify_email.html')
+
+@auth.route('profile/modify_email/<token>', methods=['GET', 'POST'])
+@login_required
+def confirm_modify_email(token):
+    confirmation =  current_user.confirm(token)
+    form = ModifyEmailForm()
+    if form.validate_on_submit():
+        current_user.email = form.email.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('电子邮箱已修改')
+        return redirect('auth/profile')
+    return render_template('auth/confirm_modify_email.html', confirmation = confirmation, form = form)

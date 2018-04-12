@@ -37,7 +37,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     # 用户认证
-    def generate_confirmation_token(self, expiration=3600):
+    def generate_confirmation_token(self, expiration=600):
         s = Serializer(current_app.config.get('SECRET_KEY'), expiration)
         return s.dumps({'confirm': self.id})
 
