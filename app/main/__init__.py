@@ -10,3 +10,9 @@ main = Blueprint('main', __name__)
 # 把路由和错误处理程序与蓝本关联起来
 # "from ." 代表从当前包中导入
 from . import views, errors
+
+from ..models import Permission
+
+@main.app_context_processor
+def inject_permissions():
+    return dict(Permission=Permission)
