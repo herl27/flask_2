@@ -33,6 +33,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     from .models import AnonymousUser
+    # 将匿名用户指定为自定义的类，此类拥有和User类一致的can()方法和is_administrator()方法
     login_manager.anonymous_user = AnonymousUser
     # 导入并注册蓝本
     from .main  import main as main_blueprint

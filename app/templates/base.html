@@ -5,6 +5,7 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico')}}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico')}}" type="image/x-icon">
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" type="text/css">
 {% endblock %}
 {% block title %}Flasky{% endblock %}
 
@@ -26,13 +27,18 @@
             </ul>
 	    <ul class="nav navbar-nav navbar-right">
 		{% if current_user.is_authenticated %}
-			<li>
-				<a href="{{url_for('auth.profile')}}">帐户中心</a>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+					<img src={{ current_user.gravatar(size=20) }}>
+					账户
+					<b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a href="{{url_for('main.user', username=current_user.username)}}">用户中心</a></li>
+					<li><a href="{{url_for('auth.logout')}}">登出</a></li>
+				</ul>
 			</li>
-			<li>
-				<a href="{{url_for('auth.logout')}}">登出</a>
-			</li>
-			{% else %}
+		{% else %}
 			<li>
 				<a href="{{url_for('auth.login')}}">登陆</a>
 			</li>

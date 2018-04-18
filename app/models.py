@@ -3,6 +3,8 @@ from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from datetime import datetime
+import hashlib
 
 # 定义权限常量
 class Permission(object):
@@ -56,6 +58,12 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
+    name = db.Column(db.String(64))
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.Text)
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    gravatar_hash = db.Column(db.String(32))
 
     def __repr__(self):
         return '<Role %r>' % self.username
@@ -74,6 +82,10 @@ class User(UserMixin, db.Model):
             if self.role is None:
                 # 通过指定默认值的方法比较容易修改默认权限(猜测)
                 self.role = Role.query.filter_by(default=True).first()
+        # 生成头像hash
+        if self.email is not None and self.gravatar_hash is None:
+            self.gravatar_hash = hashlib.md5(
+                    self.email.encode('utf-8')).hexdigest()
 
     # 密码支持
     @property
@@ -105,6 +117,14 @@ class User(UserMixin, db.Model):
         db.session.commit()
         return True
 
+    # 更改电子邮件并更新头像hash
+    def change_email(self, new_email):
+        self.email = new_email
+        self.gravatar_hash = hashlib.md5(
+                self.email.endcode('utf-8')).hexdigest()
+        db.session.add(self)
+        db.commit()
+
     # 为了简化角色和权限的实现过程，
     # 我们可在User 模型中添加一个辅助方法，检查是否有指定的权限
     def can(self, permissions):
@@ -114,6 +134,18 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
+    # 用于刷新记录用户访问网站日期的last_seen字段，该方法于auth.beforre_request中调用
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+
+    def gravatar(self, size=100, rating='g', default='wavatar'):
+        url = 'https://cdn.v2ex.com/gravatar/'
+        hash = self.gravatar_hash or hashlib.md5(
+                self.email.encode('utf-8')).hexdigest()
+        return '{url}{hash}?s={size}&r={rating}&d={default}'.format(
+               url=url, hash=hash, size=size, rating=rating, default=default)
 # 出于一致性考虑，我们还定义了AnonymousUser 类，并实现了can() 方法和is_administrator()
 # 方法。这个对象继承自Flask-Login 中的AnonymousUserMixin 类，并将其设为用户未登录时
 # current_user 的值。这样程序不用先检查用户是否登录，就能自由调用current_user.can() 和

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{user.username}}的资料{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+	<img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+	<div class="profile-header">
+		<h1>{{user.username}}的资料</h1>
+		{% if user.name or user.location%}
+		<p>
+			{% if user.name %}{{user.namel}}{% endif %}
+			{% if user.location %}
+			From <a href="https://ditu.amap.com/search?query={{user.location}}">
+				{{user.location}}
+			</a>
+			{% endif %}
+		</p>
+		{% endif %}
+		{% if current_user.is_administrator() %}
+		<p>
+		<a href="mailto:{{user.email}}">{{user.email}}</a>
+		</p>
+		{% endif %}
+		{% if user.about_me %}
+		<p>
+		{{user.about_me}}
+		</p>
+		{% endif %}
+		<p>
+			注册时间:{{moment(user.member_since).format('L')}}.
+			您已登录{{moment(user.last_seen).fromNow()}}.
+		</p>	
+		{% if user.is_administrator() %}
+		<a class="btn btn-danger" href="{{url_for('main.edit_profile_admin', id=user.id)}}">
+			编辑资料
+		</a>
+		{% endif %}
+		{% if user == current_user %}
+			<a class="btn btn-default" href="{{url_for('main.edit_profile')}}">
+				编辑资料
+			</a>
+			<a class="btn btn-default" href="{{url_for('auth.modify_password')}}">
+				修改密码
+			</a>
+			<a class="btn btn-default" href="{{ url_for('auth.modify_email') }}">
+				修改电子邮箱
+			</a>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
