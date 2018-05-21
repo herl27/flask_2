@@ -121,7 +121,7 @@ class User(UserMixin, db.Model):
     def change_email(self, new_email):
         self.email = new_email
         self.gravatar_hash = hashlib.md5(
-                self.email.endcode('utf-8')).hexdigest()
+                self.email.encode('utf-8')).hexdigest()
         db.session.add(self)
         db.commit()
 
